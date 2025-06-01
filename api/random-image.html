@@ -13,9 +13,17 @@
     console.log(`请求分类: ${category}`);
     
     // 加载图片索引数据
-    fetch('/api/image-data.json')
-      .then(response => response.json())
+    fetch('../api/image-data.json')  // 修改为相对路径
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP 错误! 状态码: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
+        if (!data || typeof data !== 'object') {
+          throw new Error('无效的数据格式');
+        }
         // 检查分类是否存在
         if (!data[category]) {
           throw new Error(`分类 "${category}" 不存在`);
