@@ -1,0 +1,36 @@
+name: Update Image Index
+
+on:
+  push:
+    paths:
+      - 'cats/**'   # 监控所有分类目录的变化
+      - 'dogs/**'
+      - 'cars/**'
+      - 'landscapes/**'
+    branches: [ main ]
+
+jobs:
+  generate-index:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: 生成图片索引
+        run: |
+          cd scripts
+          node generate-image-index.js
+          
+      - name: 提交变更
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add api/image-data.json
+          git commit -m "自动更新图片索引" || echo "没有变更需要提交"
+          git push
